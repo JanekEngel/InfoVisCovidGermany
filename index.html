@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COVID Dashboard v3</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head><body>
+<div id="dashboard">
+<div id="leftPanel">
+<div id="header">
+<h1>COVID Deutschland</h1>
+<div class="dates">
+<div><label>Start</label><input type="date" id="startDate"></div>
+<div><label>Ende</label><input type="date" id="endDate"></div>
+</div>
+<select id="metricSelect">
+<option value="AnzahlFall">Fälle</option>
+<option value="AnzahlGenesen">Genesen</option>
+<option value="AnzahlTodesfall">Todesfälle</option>
+</select>
+<div id="selectedCounty">Kein Landkreis gewählt</div>
+<div id="population"></div>
+<div id="legend">
+<span class="l cases">Fälle</span>
+<span class="l rec">Genesen</span>
+<span class="l death">Todesfälle</span>
+</div>
+</div>
+<div id="chartContainer"><svg id="barChart"></svg></div>
+</div>
+<div id="map"></div>
+</div>
+<div id="tooltip" class="tooltip"></div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chart.js"></script>
+<script src="js/map.js"></script>
+<script src="js/app.js"></script>
+</body></html>
