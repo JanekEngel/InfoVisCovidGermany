@@ -62,19 +62,32 @@ function updateMapColors(){
    });
 
    let value;
+   
    if (useRelativeCount) {
-     value = (metricValue / layerEWZ) * 100000;
+     if (max > 100000) { max = 0 }
+     if (currentMetric === 'AnzahlFall') {
+       value = (cases / layerEWZ) * 100000;
+     } else if (currentMetric === 'AnzahlGenesen') {
+       value = (recovered / layerEWZ) * 100000;
+     } else {
+       value = (deaths / layerEWZ) * 100000;
+     }
    } else {
-     value = currentMetric === 'AnzahlFall' ? Math.min(metricValue, 100000) : metricValue;
+     if (currentMetric === 'AnzahlFall') {
+       value = cases;
+     } else if (currentMetric === 'AnzahlGenesen') {
+       value = recovered;
+     } else {
+       value = deaths;
+     }
    }
-
    layer._value = value;
    layer._metricValue = metricValue;
    layer._cases = cases;
    layer._recovered = recovered;
    layer._deaths = deaths;
    layer._population = layerEWZ;
-   max=Math.max(max, layer._value);
+   max=Math.max(max, value);
  });
 
  geoLayer.eachLayer(layer=>{
@@ -97,21 +110,21 @@ function updateMapColors(){
      const recovered = layer._recovered || 0;
      const deaths = layer._deaths || 0;
      
-     const formatValue = (val, isRelative, pop) => {
+     const pro100kLabel = useRelativeCount ? ' pro 100.000' : '';
+     
+     const formatValue = (val, isRelative) => {
        if (isRelative) {
-         return ((val / pop) * 100000).toFixed(2);
+         return ((val / population) * 100000).toFixed(0);
        }
        return val.toLocaleString();
      };
      
-     const pro100kLabel = useRelativeCount ? ' pro 100.000' : '';
-     
      tooltip.innerHTML = `
        <strong>${name}</strong><br>
        Einw.: ${population.toLocaleString()}<br>
-       Fälle: ${formatValue(cases, useRelativeCount, population)}${pro100kLabel}<br>
-       Genesene: ${formatValue(recovered, useRelativeCount, population)}${pro100kLabel}<br>
-       Todesfälle: ${formatValue(deaths, useRelativeCount, population)}${pro100kLabel}
+       Fälle: ${formatValue(cases, useRelativeCount)}${pro100kLabel}<br>
+       Genesene: ${formatValue(recovered, useRelativeCount)}${pro100kLabel}<br>
+       Todesfälle: ${formatValue(deaths, useRelativeCount)}${pro100kLabel}
      `;
      tooltip.style.display = 'block';
      tooltip.style.left = (event.pageX + 10) + 'px';
@@ -140,7 +153,7 @@ function updateLegend(max) {
   
   for (let i = 0; i <= steps; i++) {
     const ratio = i / steps;
-    const value = useRelativeCount ? (ratio * max).toFixed(2) : Math.round(ratio * max);
+    const value = Math.round(ratio * max);
     const color = colorScale(ratio);
     const displayValue = value.toLocaleString();
     html += `<div style="display: flex; align-items: center; margin: 2px 0;">`;
