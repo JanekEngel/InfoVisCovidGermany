@@ -4,8 +4,14 @@ function updateChart() {
   
   const startDateEl = document.getElementById('startDate');
   const endDateEl = document.getElementById('endDate');
-  const dataIndex = currentDetailLevel === 'counties' ? countyIndex : stateIndex;
-  const rows = (dataIndex[currentCountyId] || []).filter(r => r.Refdatum >= startDateEl.value && r.Refdatum <= endDateEl.value)
+  let rows = [];
+  
+  if (currentCountyId === 'GERMANY') {
+    rows = Object.values(countyIndex).flat().filter(r => r.Refdatum >= startDateEl.value && r.Refdatum <= endDateEl.value);
+  } else {
+    const dataIndex = currentDetailLevel === 'counties' ? countyIndex : stateIndex;
+    rows = (dataIndex[currentCountyId] || []).filter(r => r.Refdatum >= startDateEl.value && r.Refdatum <= endDateEl.value);
+  }
   const factor = useRelativeCount ? 100000 / currentPopulation : 1
   
   const agg = {}

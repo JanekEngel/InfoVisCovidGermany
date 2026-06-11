@@ -4,8 +4,13 @@ let endIndex = 0;
 async function init() {
   await loadCSV();
   stateIndex = aggregateToStates();
+  germanyData = aggregateToGermany();
+  
   loadGeoJSON();
   createRangeSlider();
+  
+  currentCountyId = 'GERMANY';
+  document.getElementById('selectedCounty').textContent = 'Deutschland';
   
   const metricSelect = document.getElementById('metricSelect');
   metricSelect.onchange = e => {

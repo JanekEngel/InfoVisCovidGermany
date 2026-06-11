@@ -184,6 +184,11 @@ function loadGeoJSON(){
     map.getContainer().appendChild(legendContainer);
   }
   
+  let totalPopulation = 0;
+  g.features.forEach(f => {
+    totalPopulation += f.properties.EWZ || 0;
+  });
+  
   geoLayer=L.geoJSON(g,{
    style:f=>({weight:1,color:'#000'}),
    onEachFeature:(feature,layer)=>{
@@ -199,6 +204,13 @@ function loadGeoJSON(){
    }
   }).addTo(map);
   updateMapColors()
-  map.fitBounds(geoLayer.getBounds());
+  
+  if (currentCountyId === 'GERMANY' && currentPopulation === 1) {
+    currentPopulation = totalPopulation || 83000000;
+    document.getElementById('population').textContent = 'Einwohner: ' + currentPopulation.toLocaleString();
+    updateChart();
+  }
+  
+  map.setView([51.18, 10.45], 6);
   })
 }

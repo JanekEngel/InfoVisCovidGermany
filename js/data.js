@@ -1,6 +1,7 @@
 let rawRows = [], currentCountyId = null, currentMetric = 'AnzahlFall', dateValues = []; 
 let countyIndex = {};
 let stateIndex = {};
+let germanyData = [];
 let currentDetailLevel = 'counties';
 let useRelativeCount = false;
 let currentPopulation = 1;
@@ -17,6 +18,14 @@ function aggregateToStates() {
     const stateId = normalized.substring(0, 2);
     if (!result[stateId]) result[stateId] = [];
     result[stateId].push(...records);
+  });
+  return result;
+}
+
+function aggregateToGermany() {
+  const result = [];
+  Object.entries(countyIndex).forEach(([countyId, records]) => {
+    result.push(...records);
   });
   return result;
 }
