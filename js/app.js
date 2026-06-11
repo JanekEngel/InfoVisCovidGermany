@@ -98,6 +98,15 @@ function createRangeSlider() {
     .attr('class', 'range-slider-handle')
     .attr('r', handleSize / 2)
     .attr('cy', height / 2);
+
+  const rangeHandle = svg.append('rect')
+    .attr('class', 'range-slider-range-handle')
+    .attr('width', handleSize)
+    .attr('height', handleSize)
+    .attr('ry', handleSize / 2)
+    .attr('fill', '#a3dbf3')
+    .attr('fill-opacity', 0.7)
+    .attr('cursor', 'move');
   
   startIndex = 0;
   endIndex = dateValues.length - 1;
@@ -107,6 +116,8 @@ function createRangeSlider() {
     handle2.attr('cx', xScale(endIndex));
     selection.attr('x', xScale(startIndex))
       .attr('width', xScale(endIndex) - xScale(startIndex));
+    rangeHandle.attr('x', xScale(startIndex) + (xScale(endIndex) - xScale(startIndex)) / 2 - handleSize / 2)
+      .attr('y', height / 2 - handleSize / 2);
     document.getElementById('startDate').value = dateValues[startIndex];
     document.getElementById('endDate').value = dateValues[endIndex];
     updateMapColors();
@@ -130,8 +141,34 @@ function createRangeSlider() {
       }));
   }
   
+  function makeDraggableRange(handle) {
+    let dragStartX, startIndexStart, endIndexStart;
+    
+    handle.call(d3.drag()
+      .on('start', function(event) {
+        handle.raise();
+        dragStartX = event.x;
+        startIndexStart = startIndex;
+        endIndexStart = endIndex;
+      })
+      .on('drag', function(event) {
+        const dx = xScale.invert(event.x) - xScale.invert(dragStartX);
+        const range = endIndexStart - startIndexStart;
+        let newStartIndex = Math.round(startIndexStart + dx);
+        let newEndIndex = Math.round(endIndexStart + dx);
+        
+        newStartIndex = Math.max(0, Math.min(dateValues.length - 1 - range, newStartIndex));
+        newEndIndex = Math.max(range, Math.min(dateValues.length - 1, newEndIndex));
+        
+        startIndex = newStartIndex;
+        endIndex = newEndIndex;
+        updateHandles();
+      }));
+  }
+  
   makeDraggable(handle1, true);
   makeDraggable(handle2, false);
+  makeDraggableRange(rangeHandle);
   updateHandles();
   
   window.addEventListener('resize', function() {

@@ -169,6 +169,21 @@ function loadGeoJSON(){
  const geoFile = currentDetailLevel === 'counties' ? 'VG250_KRS.json' : 'VG250_LAN.json';
  fetch(`../GEOJson/${geoFile}`).then(r=>r.json()).then(g=>{
   if(geoLayer) map.removeLayer(geoLayer);
+  
+  if (!document.getElementById('legend')) {
+    const legendContainer = document.createElement('div');
+    legendContainer.id = 'legend';
+    legendContainer.style.position = 'absolute';
+    legendContainer.style.bottom = '20px';
+    legendContainer.style.right = '20px';
+    legendContainer.style.background = 'rgba(255,255,255,0.9)';
+    legendContainer.style.padding = '10px';
+    legendContainer.style.border = '1px solid #666';
+    legendContainer.style.zIndex = '1000';
+    legendContainer.style.borderRadius = '5px';
+    map.getContainer().appendChild(legendContainer);
+  }
+  
   geoLayer=L.geoJSON(g,{
    style:f=>({weight:1,color:'#000'}),
    onEachFeature:(feature,layer)=>{
@@ -185,19 +200,5 @@ function loadGeoJSON(){
   }).addTo(map);
   updateMapColors()
   map.fitBounds(geoLayer.getBounds());
-  
-  if (!document.getElementById('legend')) {
-    const legendContainer = document.createElement('div');
-    legendContainer.id = 'legend';
-    legendContainer.style.position = 'absolute';
-    legendContainer.style.bottom = '20px';
-    legendContainer.style.right = '20px';
-    legendContainer.style.background = 'rgba(255,255,255,0.9)';
-    legendContainer.style.padding = '10px';
-    legendContainer.style.border = '1px solid #666';
-    legendContainer.style.zIndex = '1000';
-    legendContainer.style.borderRadius = '5px';
-    map.getContainer().appendChild(legendContainer);
-  }
   })
 }
