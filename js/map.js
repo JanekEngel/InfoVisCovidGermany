@@ -65,7 +65,7 @@ function updateMapColors(){
    if (useRelativeCount) {
      value = (metricValue / layerEWZ) * 100000;
    } else {
-     value = Math.min(metricValue, 100000);
+     value = currentMetric === 'AnzahlFall' ? Math.min(metricValue, 100000) : metricValue;
    }
 
    layer._value = value;
