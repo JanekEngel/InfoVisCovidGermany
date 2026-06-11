@@ -3,12 +3,56 @@ let endIndex = 0;
 
 async function init() {
   await loadCSV();
+  stateIndex = aggregateToStates();
   loadGeoJSON();
   createRangeSlider();
+  
+  const metricSelect = document.getElementById('metricSelect');
   metricSelect.onchange = e => {
     currentMetric = e.target.value;
     updateMapColors();
   };
+  
+  document.getElementById('detailSelect').onchange = e => {
+    currentDetailLevel = e.target.value;
+    loadGeoJSON();
+    updateMapColors();
+  };
+  
+  document.getElementById('countTypeSelect').onchange = e => {
+    useRelativeCount = e.target.value === 'relative';
+    updateMapColors();
+    if (currentCountyId) updateChart();
+  };
+  
+  // Sync date inputs with slider
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+  startDateInput.value = dateValues[0];
+  endDateInput.value = dateValues[dateValues.length - 1];
+  
+  startDateInput.addEventListener('change', () => {
+    const newStartIndex = dateValues.indexOf(startDateInput.value);
+    if (newStartIndex !== -1) {
+      startIndex = newStartIndex;
+      if (startIndex > endIndex) endIndex = startIndex;
+      updateHandles();
+      updateMapColors();
+      if (currentCountyId) updateChart();
+    }
+  });
+  
+  endDateInput.addEventListener('change', () => {
+    const newEndIndex = dateValues.indexOf(endDateInput.value);
+    if (newEndIndex !== -1) {
+      endIndex = newEndIndex;
+      if (endIndex < startIndex) startIndex = endIndex;
+      updateHandles();
+      updateMapColors();
+      if (currentCountyId) updateChart();
+    }
+  });
+  
   document.getElementById('loading').style.display = 'none';
 }
 

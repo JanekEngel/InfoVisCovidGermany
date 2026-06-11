@@ -9,8 +9,10 @@
 <div id="leftPanel"><div id="header">
 <h1>COVID Deutschland</h1>
 <select id="metricSelect"><option value="AnzahlFall">Fälle</option><option value="AnzahlGenesen">Genesen</option><option value="AnzahlTodesfall">Todesfälle</option></select>
+<select id="detailSelect"><option value="counties">Landkreise</option><option value="states">Bundesländer</option></select>
+<select id="countTypeSelect"><option value="absolute">Absolute Zahlen</option><option value="relative">Pro 100.000 Einwohner</option></select>
 <div id="rangeSlider"></div>
-<div class="dates"><input id="startDate" readonly><input id="endDate" readonly></div>
+<div class="dates"><input id="startDate" type="date"><input id="endDate" type="date"></div>
 <div id="selectedCounty"></div><div id="population"></div>
 </div><div id="chartContainer"><svg id="barChart"></svg></div></div>
 <div id="map"></div></div>
