@@ -1,19 +1,25 @@
 <!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script></head>
 <body>
-<div id="loading">Daten werden geladen...</div>
+<div id="loading"><span class="loading-text">Daten werden geladen</span></div>
 <div id="dashboard">
 <div id="leftPanel">
   <div id="header">
     <h1>COVID Deutschland</h1>
   </div>
   <div id="rangeSlider"></div>
+  <div class="divider"></div>
   <div class="dates"><input id="startDate" type="date"><input id="endDate" type="date"></div>
+  <div class="divider"></div>
   <div id="selectedCounty"></div>
   <div id="population"></div>
+  <div class="divider"></div>
   <div id="chartContainer"><svg id="barChart"></svg></div>
 </div>
 <div id="rightPanel">

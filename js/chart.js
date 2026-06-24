@@ -59,11 +59,11 @@ function updateChart() {
       };
       
       tooltip.innerHTML = `
-        <strong>${d.Altersgruppe} (${d.Geschlecht})</strong><br>
-        Fälle: ${formatValue(useRelativeCount ? fallPer100k : d.Fall, useRelativeCount)}<br>
-        Genesene: ${formatValue(useRelativeCount ? genPer100k : d.Genesen, useRelativeCount)}<br>
-        Todesfälle: ${formatValue(useRelativeCount ? todPer100k : d.Tod, useRelativeCount)}<br>
-        Gesamt: ${formatValue(useRelativeCount ? totalPer100k : totalAbs, useRelativeCount)}${useRelativeCount ? ' pro 100.000' : ''}
+        <strong>${d.Altersgruppe} (${d.Geschlecht})</strong>
+        <div class="data-row"><span class="data-label">Fälle:</span><span class="data-value">${formatValue(useRelativeCount ? fallPer100k : d.Fall, useRelativeCount)}${useRelativeCount ? '' : ''}</span></div>
+        <div class="data-row"><span class="data-label">Genesene:</span><span class="data-value">${formatValue(useRelativeCount ? genPer100k : d.Genesen, useRelativeCount)}${useRelativeCount ? '' : ''}</span></div>
+        <div class="data-row"><span class="data-label">Todesfälle:</span><span class="data-value">${formatValue(useRelativeCount ? todPer100k : d.Tod, useRelativeCount)}${useRelativeCount ? '' : ''}</span></div>
+        <div class="data-row"><span class="data-label">Gesamt:</span><span class="data-value">${formatValue(useRelativeCount ? totalPer100k : totalAbs, useRelativeCount)}${useRelativeCount ? ' pro 100.000' : ''}</span></div>
       `;
       tooltip.style.display = 'block';
       tooltip.style.left = (event.pageX + 10) + 'px';
@@ -73,9 +73,53 @@ function updateChart() {
       document.getElementById('tooltip').style.display = 'none';
     });
   
-  bars.append('rect').attr('width', x1.bandwidth()).attr('y', d => y(0)).attr('height', d => y(-d.Tod * factor) - y(0)).attr('fill', '#ffbbbb')
-  bars.append('rect').attr('width', x1.bandwidth()).attr('y', d => y(d.Fall * factor)).attr('height', d => y(0) - y(d.Fall * factor)).attr('fill', '#a3dbf3')
-  bars.append('rect').attr('width', x1.bandwidth()).attr('y', d => y((d.Fall + d.Genesen) * factor)).attr('height', d => y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor)).attr('fill', '#89e59a')
-  g.append('g').attr('transform', `translate(0,${y(0)})`).call(d3.axisBottom(x0))
-  g.append('g').call(d3.axisLeft(y))
+  bars.append('rect')
+    .attr('width', x1.bandwidth())
+    .attr('y', d => y(0))
+    .attr('height', d => y(-d.Tod * factor) - y(0))
+    .attr('fill', '#ffbbbb')
+    .attr('stroke', '#fff')
+    .attr('stroke-width', '1px');
+  
+  bars.append('rect')
+    .attr('width', x1.bandwidth())
+    .attr('y', d => y(d.Fall * factor))
+    .attr('height', d => y(0) - y(d.Fall * factor))
+    .attr('fill', '#a3dbf3')
+    .attr('stroke', '#fff')
+    .attr('stroke-width', '1px');
+    
+  bars.append('rect')
+    .attr('width', x1.bandwidth())
+    .attr('y', d => y((d.Fall + d.Genesen) * factor))
+    .attr('height', d => y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor))
+    .attr('fill', '#89e59a')
+    .attr('stroke', '#fff')
+    .attr('stroke-width', '1px');
+  
+  const xAxis = g.append('g')
+    .attr('transform', `translate(0,${h - 80})`)
+    .call(d3.axisBottom(x0))
+    .selectAll('text')
+      .style('font-size', '12px')
+      .style('fill', '#404e5c')
+      .style('font-family', 'Inter, sans-serif');
+  
+  const yAxis = g.append('g')
+    .call(d3.axisLeft(y))
+    .selectAll('text')
+      .style('font-size', '12px')
+      .style('fill', '#404e5c')
+      .style('font-family', 'Inter, sans-serif');
+  
+  const gridLines = g.append('g')
+    .attr('class', 'grid')
+    .call(d3.axisLeft(y)
+      .tickSize(-(w - 80))
+      .tickFormat('')
+      .ticks(5))
+    .selectAll('line')
+      .style('stroke', '#e9ecef')
+      .style('stroke-width', '1px')
+      .style('stroke-dasharray', '2,2');
 }

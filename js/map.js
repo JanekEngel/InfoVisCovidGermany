@@ -24,11 +24,11 @@ function normalizeAGS(v){
 
 function getColorScale() {
   if (currentMetric === 'AnzahlFall') {
-    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#f7fbff', '#4292c6', '#08306b']);
+    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#a3dbf3', '#000022']);
   } else if (currentMetric === 'AnzahlGenesen') {
-    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#f7fcf5', '#78c679', '#1a9850']);
+    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#89e59a', '#404e5c']);
   } else {
-    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#fff5f0', '#f46d43', '#800026']);
+    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#ffbbbb', '#404e5c']);
   }
 }
 
@@ -145,7 +145,7 @@ function updateLegend(max) {
   
   const colorScale = getColorScale();
   const steps = 5;
-  let html = '<div style="font-size: 12px; font-weight: bold; margin-bottom: 5px;">';
+  let html = '<div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #000022;">';
   html += currentMetric === 'AnzahlFall' ? 'Fälle' : 
           currentMetric === 'AnzahlGenesen' ? 'Genesene' : 'Todesfälle';
   html += useRelativeCount ? ' (pro 100.000)' : '';
@@ -156,9 +156,9 @@ function updateLegend(max) {
     const value = Math.round(ratio * max);
     const color = colorScale(ratio);
     const displayValue = value.toLocaleString();
-    html += `<div style="display: flex; align-items: center; margin: 2px 0;">`;
-    html += `<div style="width: 20px; height: 15px; background-color: ${color}; border: 1px solid #666;"></div>`;
-    html += `<span style="margin-left: 5px;">${displayValue}</span>`;
+    html += `<div class="legend-row" style="display: flex; align-items: center; margin: 2px 0;">`;
+    html += `<div class="legend-color-box" style="width: 20px; height: 15px; background-color: ${color}; border: 1px solid #e9ecef;"></div>`;
+    html += `<span class="legend-label" style="margin-left: 8px; color: #404e5c;">${displayValue}</span>`;
     html += `</div>`;
   }
   
@@ -173,14 +173,6 @@ function loadGeoJSON(){
   if (!document.getElementById('legend')) {
     const legendContainer = document.createElement('div');
     legendContainer.id = 'legend';
-    legendContainer.style.position = 'absolute';
-    legendContainer.style.bottom = '20px';
-    legendContainer.style.right = '20px';
-    legendContainer.style.background = 'rgba(255,255,255,0.9)';
-    legendContainer.style.padding = '10px';
-    legendContainer.style.border = '1px solid #666';
-    legendContainer.style.zIndex = '1000';
-    legendContainer.style.borderRadius = '5px';
     map.getContainer().appendChild(legendContainer);
   }
   
