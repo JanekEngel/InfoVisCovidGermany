@@ -5,6 +5,7 @@ let germanyData = [];
 let currentDetailLevel = 'counties';
 let useRelativeCount = false;
 let currentPopulation = 1;
+const today = new Date();
 
 function normalizeId(id) {
   const s = String(id);
@@ -30,7 +31,7 @@ function aggregateToGermany() {
   return result;
 }
 
-async function loadCSV(path = '../Bereinigte_Daten_2026_06_11.csv') { 
+async function loadCSV(path=`../Bereinigte_Daten_${today.getFullYear()}_${String(today.getMonth()+1).padStart(2,'0')}_${String(today.getDate()).padStart(2,'0')}.csv`) { 
   return new Promise(r => Papa.parse(path, { 
     download: true, 
     header: true, 
