@@ -548,27 +548,29 @@ button.primary:hover:not(:disabled) {
 }
 
 .range-slider-handle {
+  stroke: #ffffff;
+  stroke-width: 2px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .range-slider-handle:hover {
-  stroke-width: 4px;
-  r: 10px;
+  stroke-width: 3px;
 }
 
 .range-slider-range-handle {
-  fill-opacity: 0.6;
-  stroke-width: 2px;
+  fill-opacity: 0.3;
+  stroke: var(--color-background);
+  stroke-width: 1px;
   cursor: move;
   transition: all var(--transition-fast);
-  rx: 4px;
-  ry: 4px;
+  rx: 2px;
+  ry: 2px;
 }
 
 .range-slider-range-handle:hover {
-  fill-opacity: 0.9;
-  stroke-width: 3px;
+  fill-opacity: 0.5;
+  stroke-width: 2px;
 }
 
 .range-slider-track {
