@@ -188,8 +188,7 @@ function loadGeoJSON(){
       selectedLayer=layer;
       currentCountyId=normalizeAGS(feature.properties.AGS);
       currentPopulation = feature.properties.EWZ || 1;
-      document.getElementById('selectedCounty').textContent=feature.properties.GEN;
-      document.getElementById('population').textContent='Einwohner: '+currentPopulation;
+      document.getElementById('selectedCounty').innerHTML=feature.properties.GEN + '<span id="population" style="margin-left: 20px; font-size: 12px; color: #404e5c;">Einwohner: '+currentPopulation.toLocaleString()+'</span>';
       updateChart();
       updateMapColors();
     });
@@ -199,7 +198,7 @@ function loadGeoJSON(){
   
   if (currentCountyId === 'GERMANY' && currentPopulation === 1) {
     currentPopulation = totalPopulation || 83000000;
-    document.getElementById('population').textContent = 'Einwohner: ' + currentPopulation.toLocaleString();
+    document.getElementById('selectedCounty').innerHTML = 'Deutschland <span id="population" style="margin-left: 20px; font-size: 12px; color: #404e5c;">Einwohner: ' + currentPopulation.toLocaleString() + '</span>';
     updateChart();
   }
   

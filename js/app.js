@@ -10,7 +10,6 @@ async function init() {
   createRangeSlider();
   
   currentCountyId = 'GERMANY';
-  document.getElementById('selectedCounty').textContent = 'Deutschland';
   
   const metricSelect = document.getElementById('metricSelect');
   metricSelect.onchange = e => {
@@ -38,28 +37,48 @@ async function init() {
 
   let updatingFromSlider = false;
   
+  function syncDatePicker(dateInput, isStart) {
+    const newIndex = dateValues.indexOf(dateInput.value);
+    if (newIndex === -1) return;
+    
+    if (isStart) {
+      if (newIndex > endIndex) {
+        startIndex = endIndex;
+        startDateInput.value = dateValues[endIndex];
+      } else {
+        startIndex = newIndex;
+      }
+    } else {
+      if (newIndex < startIndex) {
+        endIndex = startIndex;
+        endDateInput.value = dateValues[startIndex];
+      } else {
+        endIndex = newIndex;
+      }
+    }
+    updateHandles();
+    updateMapColors();
+    if (currentCountyId) updateChart();
+  }
+  
   startDateInput.addEventListener('change', () => {
     if (updatingFromSlider) return;
-    const newStartIndex = dateValues.indexOf(startDateInput.value);
-    if (newStartIndex !== -1) {
-      startIndex = newStartIndex;
-      if (startIndex > endIndex) endIndex = startIndex;
-      updateHandles();
-      updateMapColors();
-      if (currentCountyId) updateChart();
-    }
+    syncDatePicker(startDateInput, true);
+  });
+  
+  startDateInput.addEventListener('blur', () => {
+    if (updatingFromSlider) return;
+    syncDatePicker(startDateInput, true);
   });
   
   endDateInput.addEventListener('change', () => {
     if (updatingFromSlider) return;
-    const newEndIndex = dateValues.indexOf(endDateInput.value);
-    if (newEndIndex !== -1) {
-      endIndex = newEndIndex;
-      if (endIndex < startIndex) startIndex = endIndex;
-      updateHandles();
-      updateMapColors();
-      if (currentCountyId) updateChart();
-    }
+    syncDatePicker(endDateInput, false);
+  });
+  
+  endDateInput.addEventListener('blur', () => {
+    if (updatingFromSlider) return;
+    syncDatePicker(endDateInput, false);
   });
   
   document.getElementById('loading').style.display = 'none';
