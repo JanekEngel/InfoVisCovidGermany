@@ -199,14 +199,27 @@ small {
   margin-bottom: 0;
   border-bottom: 2px solid var(--color-cases);
   padding-bottom: var(--space-md);
+  transition: border-color var(--transition-fast);
 }
 
-#header h1 {
+#header.h1 {
   font-size: var(--text-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0;
   letter-spacing: -0.02em;
+}
+
+#header.metric-cases {
+  border-bottom-color: var(--color-cases);
+}
+
+#header.metric-recovered {
+  border-bottom-color: var(--color-recovered);
+}
+
+#header.metric-deaths {
+  border-bottom-color: var(--color-deaths);
 }
 
 /* ============================================
@@ -415,9 +428,9 @@ button.primary:hover:not(:disabled) {
 #tooltip {
   position: absolute;
   display: none;
-  background: var(--color-deep);
-  color: var(--color-background);
-  border: none;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-none);
   font-size: var(--text-sm);
@@ -427,24 +440,16 @@ button.primary:hover:not(:disabled) {
   max-width: 300px;
   line-height: 1.4;
   font-family: var(--font-family);
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
-}
-
-#tooltip::before {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: var(--color-deep);
+  transition: opacity var(--transition-fast);
 }
 
 #tooltip strong {
   display: block;
   margin-bottom: var(--space-xs);
-  color: var(--color-cases);
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-semibold);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: var(--space-xs);
 }
 
 #tooltip br {
@@ -458,11 +463,12 @@ button.primary:hover:not(:disabled) {
 }
 
 #tooltip .data-label {
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
 }
 
 #tooltip .data-value {
   font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
 }
 
 /* ============================================
@@ -474,6 +480,19 @@ button.primary:hover:not(:disabled) {
   width: 100%;
   height: 80px;
   margin: var(--space-md) 0;
+  transition: background-color var(--transition-fast);
+}
+
+#rangeSlider.metric-cases {
+  background: rgba(163, 219, 243, 0.1);
+}
+
+#rangeSlider.metric-recovered {
+  background: rgba(137, 229, 154, 0.1);
+}
+
+#rangeSlider.metric-deaths {
+  background: rgba(255, 187, 187, 0.1);
 }
 
 #rangeSlider svg {
@@ -549,11 +568,6 @@ button.primary:hover:not(:disabled) {
   font-size: var(--text-sm);
   color: var(--color-text-primary);
   line-height: 1.4;
-  transition: all var(--transition-fast);
-}
-
-#legend:hover {
-  box-shadow: var(--shadow-lg);
 }
 
 #legend > div:first-child {
@@ -569,11 +583,19 @@ button.primary:hover:not(:disabled) {
   display: flex;
   align-items: center;
   margin: var(--space-xs) 0;
-  transition: transform var(--transition-fast);
 }
 
-#legend .legend-row:hover {
-  transform: translateX(4px);
+#legend .legend-color-box {
+  width: 20px;
+  height: 15px;
+  margin-right: var(--space-sm);
+  border: 1px solid var(--color-border-light);
+  flex-shrink: 0;
+}
+
+#legend .legend-label {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 #legend .legend-color-box {

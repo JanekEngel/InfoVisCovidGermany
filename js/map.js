@@ -145,7 +145,9 @@ function updateLegend(max) {
   
   const colorScale = getColorScale();
   const steps = 5;
-  let html = '<div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #000022;">';
+  const metricColor = currentMetric === 'AnzahlFall' ? '#a3dbf3' : 
+                     currentMetric === 'AnzahlGenesen' ? '#89e59a' : '#ffbbbb';
+  let html = '<div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: ' + metricColor + ';">';
   html += currentMetric === 'AnzahlFall' ? 'Fälle' : 
           currentMetric === 'AnzahlGenesen' ? 'Genesene' : 'Todesfälle';
   html += useRelativeCount ? ' (pro 100.000)' : '';

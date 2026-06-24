@@ -12,10 +12,24 @@ async function init() {
   currentCountyId = 'GERMANY';
   
   const metricSelect = document.getElementById('metricSelect');
+  const header = document.getElementById('header');
+  const rangeSlider = document.getElementById('rangeSlider');
+  
+  function updateMetricColors() {
+    const metricClass = 'metric-' + (currentMetric === 'AnzahlFall' ? 'cases' : 
+                                  currentMetric === 'AnzahlGenesen' ? 'recovered' : 'deaths');
+    
+    header.className = metricClass;
+    rangeSlider.className = metricClass;
+  }
+  
   metricSelect.onchange = e => {
     currentMetric = e.target.value;
+    updateMetricColors();
     updateMapColors();
   };
+  
+  updateMetricColors();
   
   document.getElementById('detailSelect').onchange = e => {
     currentDetailLevel = e.target.value;
