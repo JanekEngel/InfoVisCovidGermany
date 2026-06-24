@@ -121,21 +121,18 @@ function createRangeSlider() {
     .attr('y1', height / 2)
     .attr('x2', width)
     .attr('y2', height / 2)
-    .attr('stroke', '#dee2e6')
     .attr('stroke-width', trackHeight);
   
   const selection = svg.append('rect')
     .attr('class', 'range-slider-selection')
     .attr('y', height / 2 - trackHeight / 2)
     .attr('height', trackHeight)
-    .attr('fill', '#a3dbf3')
     .attr('fill-opacity', 0.3);
   
   const handle1 = svg.append('circle')
     .attr('class', 'range-slider-handle')
     .attr('r', handleSize / 2)
     .attr('cy', height / 2)
-    .attr('fill', '#000022')
     .attr('stroke', '#ffffff')
     .attr('stroke-width', 2);
   
@@ -143,7 +140,6 @@ function createRangeSlider() {
     .attr('class', 'range-slider-handle')
     .attr('r', handleSize / 2)
     .attr('cy', height / 2)
-    .attr('fill', '#000022')
     .attr('stroke', '#ffffff')
     .attr('stroke-width', 2);
 
@@ -153,7 +149,6 @@ function createRangeSlider() {
     .attr('height', handleSize)
     .attr('rx', 4)
     .attr('ry', 4)
-    .attr('fill', '#a3dbf3')
     .attr('fill-opacity', 0.5)
     .attr('stroke', '#000022')
     .attr('stroke-width', 1)
