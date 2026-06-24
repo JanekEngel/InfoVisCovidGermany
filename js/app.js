@@ -35,8 +35,11 @@ async function init() {
   const endDateInput = document.getElementById('endDate');
   startDateInput.value = dateValues[0];
   endDateInput.value = dateValues[dateValues.length - 1];
+
+  let updatingFromSlider = false;
   
   startDateInput.addEventListener('change', () => {
+    if (updatingFromSlider) return;
     const newStartIndex = dateValues.indexOf(startDateInput.value);
     if (newStartIndex !== -1) {
       startIndex = newStartIndex;
@@ -48,6 +51,7 @@ async function init() {
   });
   
   endDateInput.addEventListener('change', () => {
+    if (updatingFromSlider) return;
     const newEndIndex = dateValues.indexOf(endDateInput.value);
     if (newEndIndex !== -1) {
       endIndex = newEndIndex;
@@ -64,7 +68,7 @@ async function init() {
 function createRangeSlider() {
   const container = d3.select('#rangeSlider');
   const width = container.node().offsetWidth;
-  const height = 40;
+  const height = 80;
   
   const svg = container.append('svg')
     .attr('width', width)
@@ -76,7 +80,7 @@ function createRangeSlider() {
     .nice();
   
   const trackHeight = 6;
-  const handleSize = 16;
+  const handleSize = 20;
   
   const track = svg.append('line')
     .attr('class', 'range-slider-track')
@@ -114,6 +118,8 @@ function createRangeSlider() {
     .attr('class', 'range-slider-range-handle')
     .attr('width', handleSize)
     .attr('height', handleSize)
+    .attr('rx', 4)
+    .attr('ry', 4)
     .attr('fill', '#a3dbf3')
     .attr('fill-opacity', 0.5)
     .attr('stroke', '#000022')
@@ -130,8 +136,12 @@ function createRangeSlider() {
       .attr('width', xScale(endIndex) - xScale(startIndex));
     rangeHandle.attr('x', xScale(startIndex) + (xScale(endIndex) - xScale(startIndex)) / 2 - handleSize / 2)
       .attr('y', height / 2 - handleSize / 2);
+    
+    updatingFromSlider = true;
     document.getElementById('startDate').value = dateValues[startIndex];
     document.getElementById('endDate').value = dateValues[endIndex];
+    updatingFromSlider = false;
+    
     updateMapColors();
     if (currentCountyId) updateChart();
   }

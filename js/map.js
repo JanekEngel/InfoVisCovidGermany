@@ -24,11 +24,11 @@ function normalizeAGS(v){
 
 function getColorScale() {
   if (currentMetric === 'AnzahlFall') {
-    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#a3dbf3', '#000022']);
+    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#a3dbf3', '#00008b']);
   } else if (currentMetric === 'AnzahlGenesen') {
-    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#89e59a', '#404e5c']);
+    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#89e59a', '#2d5a3d']);
   } else {
-    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#ffbbbb', '#404e5c']);
+    return d3.scaleLinear().domain([0, 0.5, 1]).range(['#ffffff', '#ffbbbb', '#cc0000']);
   }
 }
 

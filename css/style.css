@@ -168,8 +168,8 @@ small {
 }
 
 #leftPanel {
-  width: 35%;
-  min-width: 550px;
+  width: 50%;
+  min-width: 500px;
   display: flex;
   flex-direction: column;
   background: var(--color-background);
@@ -181,10 +181,9 @@ small {
 }
 
 #rightPanel {
-  flex: 1;
+  width: 50%;
   display: flex;
   flex-direction: column;
-  width: 100%;
   min-width: 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-none);
@@ -478,7 +477,7 @@ button.primary:hover:not(:disabled) {
 #rangeSlider {
   position: relative;
   width: 100%;
-  height: 60px;
+  height: 80px;
   margin: var(--space-md) 0;
 }
 
@@ -489,7 +488,7 @@ button.primary:hover:not(:disabled) {
 
 .range-slider-track {
   stroke: var(--color-border);
-  stroke-width: 4px;
+  stroke-width: 6px;
   transition: stroke var(--transition-fast);
 }
 
@@ -499,18 +498,18 @@ button.primary:hover:not(:disabled) {
 
 .range-slider-selection {
   fill: var(--color-cases);
-  fill-opacity: 0.3;
-  transition: fill-opacity var(--transition-fast);
+  fill-opacity: 0.4;
+  transition: all var(--transition-fast);
 }
 
 .range-slider-selection:hover {
-  fill-opacity: 0.5;
+  fill-opacity: 0.6;
 }
 
 .range-slider-handle {
   fill: var(--color-deep);
   stroke: var(--color-background);
-  stroke-width: 2px;
+  stroke-width: 3px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -518,21 +517,24 @@ button.primary:hover:not(:disabled) {
 .range-slider-handle:hover {
   fill: var(--color-text-primary);
   stroke: var(--color-cases);
-  stroke-width: 3px;
+  stroke-width: 4px;
+  r: 10px;
 }
 
 .range-slider-range-handle {
   fill: var(--color-cases);
-  fill-opacity: 0.5;
+  fill-opacity: 0.6;
   stroke: var(--color-deep);
-  stroke-width: 1px;
+  stroke-width: 2px;
   cursor: move;
   transition: all var(--transition-fast);
+  rx: 4px;
+  ry: 4px;
 }
 
 .range-slider-range-handle:hover {
-  fill-opacity: 0.8;
-  stroke-width: 2px;
+  fill-opacity: 0.9;
+  stroke-width: 3px;
 }
 
 /* ============================================
