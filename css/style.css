@@ -690,7 +690,7 @@ button.primary:hover:not(:disabled) {
 
 .range-slider-selection {
   fill: var(--color-cases);
-  fill-opacity: 0.4;
+  fill-opacity: 1;
   transition: all var(--transition-fast);
 }
 
