@@ -11,6 +11,7 @@ let showCases = true;
 let showRecoveries = true;
 let showDeaths = true;
 let showGender = true;
+let showAgeGroups = true;
 const today = new Date();
 
 function normalizeId(id) {

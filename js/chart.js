@@ -15,20 +15,20 @@ function updateChart() {
   }
   const factor = useRelativeCount ? 100000 / currentPopulation : 1
   
-  // Aggregate data based on gender toggle, excluding null/empty age groups
+  // Aggregate data based on gender and age groups toggles, excluding null/empty age groups
   const agg = {};
   rows.forEach(r => { 
     // Skip rows with null, undefined, empty age groups, or the string "null"
     if (!r.Altersgruppe || r.Altersgruppe === 'null') return;
     
-    const key = showGender 
-      ? r.Altersgruppe + '_' + r.Geschlecht 
-      : r.Altersgruppe;
+    const key = showAgeGroups 
+      ? (showGender ? r.Altersgruppe + '_' + r.Geschlecht : r.Altersgruppe)
+      : (showGender ? r.Geschlecht : 'alle');
     
     if (!agg[key]) {
       agg[key] = { 
-        Altersgruppe: r.Altersgruppe,
-        Geschlecht: showGender ? r.Geschlecht : null,
+        Altersgruppe: showAgeGroups ? r.Altersgruppe : (showGender ? 'Alle Altersgruppen' : 'Gesamt'),
+        Geschlecht: showAgeGroups ? (showGender ? r.Geschlecht : null) : (showGender ? r.Geschlecht : null),
         Fall: 0, 
         Genesen: 0, 
         Tod: 0 
@@ -46,19 +46,34 @@ function updateChart() {
   svg.attr('viewBox', `0 0 ${w} ${h}`)
   const g = svg.append('g').attr('transform', `translate(${m.left},${m.top})`)
   
-  // Calculate x scales based on gender toggle
+  // Calculate x scales based on gender and age groups toggles
   let x0, x1;
-  if (showGender) {
-    // Original behavior: x0 for age groups, x1 for genders
-    const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a));
-    const genders = [...new Set(data.map(d => d.Geschlecht))];
-    x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2);
-    x1 = d3.scaleBand().domain(genders).range([0, x0.bandwidth()]);
+  if (showAgeGroups) {
+    // Show age groups separately
+    if (showGender) {
+      // Original behavior: x0 for age groups, x1 for genders
+      const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a));
+      const genders = [...new Set(data.map(d => d.Geschlecht).filter(g => g !== null))];
+      x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2);
+      x1 = d3.scaleBand().domain(genders).range([0, x0.bandwidth()]);
+    } else {
+      // Aggregated by age only
+      const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a));
+      x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2);
+      x1 = null;
+    }
   } else {
-    // Aggregated by age only
-    const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a));
-    x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2);
-    x1 = null;
+    // Age groups are aggregated
+    if (showGender) {
+      // x0 for genders only
+      const genders = [...new Set(data.map(d => d.Geschlecht).filter(g => g !== null))];
+      x0 = d3.scaleBand().domain(genders).range([0, w - 80]).padding(.2);
+      x1 = null;
+    } else {
+      // Single bar for everything
+      x0 = d3.scaleBand().domain(['Gesamt']).range([0, w - 80]).padding(.2);
+      x1 = null;
+    }
   }
   
   // Calculate y domain based on visible dimensions
@@ -93,10 +108,14 @@ function updateChart() {
   
   const bars = g.selectAll('g').data(data).enter().append('g')
     .attr('transform', d => {
-      if (showGender) {
+      if (showAgeGroups && showGender) {
         return `translate(${x0(d.Altersgruppe) + x1(d.Geschlecht)},0)`;
-      } else {
+      } else if (showAgeGroups) {
         return `translate(${x0(d.Altersgruppe)},0)`;
+      } else if (showGender) {
+        return `translate(${x0(d.Geschlecht)},0)`;
+      } else {
+        return `translate(${x0('Gesamt')},0)`;
       }
     })
     .on('mouseover', function(event, d) {
@@ -135,10 +154,16 @@ function updateChart() {
   // Render bars in correct stacking order
   // Deaths at bottom (negative values), then cases, then recoveries at top
   
+  // Calculate bar width based on current toggles
+  const barWidth = () => {
+    if (showAgeGroups && showGender) return x1.bandwidth();
+    return x0.bandwidth();
+  };
+
   // Deaths bar
   if (showDeaths) {
     bars.append('rect')
-      .attr('width', showGender ? x1.bandwidth() : x0.bandwidth())
+      .attr('width', barWidth())
       .attr('y', d => y(0))
       .attr('height', d => y(-d.Tod * factor) - y(0))
       .attr('fill', '#ffbbbb')
@@ -149,7 +174,7 @@ function updateChart() {
   // Cases bar
   if (showCases) {
     bars.append('rect')
-      .attr('width', showGender ? x1.bandwidth() : x0.bandwidth())
+      .attr('width', barWidth())
       .attr('y', d => y(d.Fall * factor))
       .attr('height', d => y(0) - y(d.Fall * factor))
       .attr('fill', '#a3dbf3')
@@ -160,7 +185,7 @@ function updateChart() {
   // Recoveries bar
   if (showRecoveries) {
     bars.append('rect')
-      .attr('width', showGender ? x1.bandwidth() : x0.bandwidth())
+      .attr('width', barWidth())
       .attr('y', d => y((d.Fall + d.Genesen) * factor))
       .attr('height', d => y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor))
       .attr('fill', '#89e59a')

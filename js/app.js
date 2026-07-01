@@ -252,6 +252,18 @@ async function init() {
       if (currentCountyId) updateChart();
     };
     chartControls.appendChild(genderBtn);
+
+    // Add age groups toggle
+    const ageGroupsBtn = document.createElement('button');
+    ageGroupsBtn.id = 'toggleAgeGroups';
+    ageGroupsBtn.className = 'chart-toggle active';
+    ageGroupsBtn.textContent = 'Nach Altersgruppen';
+    ageGroupsBtn.onclick = () => {
+      showAgeGroups = !showAgeGroups;
+      ageGroupsBtn.classList.toggle('active');
+      if (currentCountyId) updateChart();
+    };
+    chartControls.appendChild(ageGroupsBtn);
   }
   
   // Initialize toggles
