@@ -1,16 +1,29 @@
 const ageOrder = ['00-04', '05-14', '15-34', '35-59', '60-79', '80+']
 function updateChart() { 
-  if (!currentCountyId) return
+  console.log('updateChart called, county:', currentCountyId);
+  if (!currentCountyId) {
+    console.log('No county selected, returning early');
+    return;
+  }
   
   const startDateEl = document.getElementById('startDate');
   const endDateEl = document.getElementById('endDate');
+  console.log('Chart date range:', startDateEl.value, '-', endDateEl.value);
+  const startDate = new Date(startDateEl.value);
+  const endDate = new Date(endDateEl.value);
   let rows = [];
   
   if (currentCountyId === 'GERMANY') {
-    rows = Object.values(countyIndex).flat().filter(r => r.Refdatum >= startDateEl.value && r.Refdatum <= endDateEl.value);
+    rows = Object.values(countyIndex).flat().filter(r => {
+      const rowDate = new Date(r.Refdatum);
+      return rowDate >= startDate && rowDate <= endDate;
+    });
   } else {
     const dataIndex = currentDetailLevel === 'counties' ? countyIndex : stateIndex;
-    rows = (dataIndex[currentCountyId] || []).filter(r => r.Refdatum >= startDateEl.value && r.Refdatum <= endDateEl.value);
+    rows = (dataIndex[currentCountyId] || []).filter(r => {
+      const rowDate = new Date(r.Refdatum);
+      return rowDate >= startDate && rowDate <= endDate;
+    });
   }
   const factor = useRelativeCount ? 100000 / currentPopulation : 1
   

@@ -38,10 +38,17 @@ function metricColor(t) {
 }
 
 function updateMapColors(){
- if(!geoLayer) return;
+ console.log('updateMapColors called, dates:', document.getElementById('startDate').value, '-', document.getElementById('endDate').value);
+ if(!geoLayer) {
+   console.log('geoLayer not ready, returning early');
+   return;
+}
 
  const startDateEl = document.getElementById('startDate');
  const endDateEl = document.getElementById('endDate');
+ const startDate = new Date(startDateEl.value);
+ const endDate = new Date(endDateEl.value);
+ console.log('Date range for filtering:', startDate, 'to', endDate);
  let max=1;
  const dataIndex = currentDetailLevel === 'counties' ? countyIndex : stateIndex;
 
@@ -53,7 +60,8 @@ function updateMapColors(){
    let metricValue = 0;
 
    (dataIndex[ags]||[]).forEach(r=>{
-      if(r.Refdatum>=startDateEl.value && r.Refdatum<=endDateEl.value){
+      const rowDate = new Date(r.Refdatum);
+      if(rowDate >= startDate && rowDate <= endDate){
          cases += Number(r.AnzahlFall) || 0;
          recovered += Number(r.AnzahlGenesen) || 0;
          deaths += Number(r.AnzahlTodesfall) || 0;
