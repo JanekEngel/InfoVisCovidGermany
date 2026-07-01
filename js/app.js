@@ -38,6 +38,7 @@ async function init() {
     const width = container.node().offsetWidth;
     height = 80;
     handleSize = 20;
+    const handleRadius = handleSize / 2; // 10px
     
     svg = container.append('svg')
       .attr('width', width)
@@ -45,16 +46,15 @@ async function init() {
     
     xScale = d3.scaleLinear()
       .domain([0, dateValues.length - 1])
-      .range([0, width])
-      .nice();
+      .range([handleRadius, width - handleRadius]);
     
     const trackHeight = 6;
     
     track = svg.append('line')
       .attr('class', 'range-slider-track')
-      .attr('x1', 0)
+      .attr('x1', handleRadius)
       .attr('y1', height / 2)
-      .attr('x2', width)
+      .attr('x2', width - handleRadius)
       .attr('y2', height / 2)
       .attr('stroke-width', trackHeight);
     
@@ -142,8 +142,8 @@ async function init() {
     window.addEventListener('resize', function() {
       const newWidth = container.node().offsetWidth;
       svg.attr('width', newWidth);
-      xScale.range([0, newWidth]);
-      track.attr('x2', newWidth);
+      xScale.range([handleRadius, newWidth - handleRadius]);
+      track.attr('x1', handleRadius).attr('x2', newWidth - handleRadius);
       updateHandles();
     });
   }
@@ -161,6 +161,10 @@ async function init() {
     
     header.className = metricClass;
     rangeSlider.className = metricClass;
+    
+    // Update date input focus colors based on metric
+    document.getElementById('startDate').className = metricClass;
+    document.getElementById('endDate').className = metricClass;
   }
   
   metricSelect.onchange = e => {
@@ -188,6 +192,10 @@ async function init() {
   const endDateInput = document.getElementById('endDate');
   startDateInput.value = dateValues[0];
   endDateInput.value = dateValues[dateValues.length - 1];
+  // Initialize date inputs with current metric class
+  startDateInput.className = 'metric-' + (currentMetric === 'AnzahlFall' ? 'cases' : 
+                                           currentMetric === 'AnzahlGenesen' ? 'recovered' : 'deaths');
+  endDateInput.className = startDateInput.className;
 
   function syncDatePicker(dateInput, isStart) {
     const selectedDate = dateInput.value;

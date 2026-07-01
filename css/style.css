@@ -265,12 +265,28 @@ select, input[type="text"], input[type="date"], input[type="number"] {
 
 select:focus, input:focus {
   outline: none;
-  border-color: var(--color-cases);
-  box-shadow: 0 0 0 2px rgba(163, 219, 243, 0.25);
+  border-color: var(--focus-color, var(--color-cases));
+  box-shadow: 0 0 0 2px var(--focus-shadow, rgba(163, 219, 243, 0.25));
 }
 
 select:hover, input:hover {
   border-color: var(--color-text-secondary);
+}
+
+/* Date input focus colors based on metric */
+#startDate.metric-cases:focus, #endDate.metric-cases:focus {
+  --focus-color: var(--color-cases);
+  --focus-shadow: rgba(163, 219, 243, 0.25);
+}
+
+#startDate.metric-recovered:focus, #endDate.metric-recovered:focus {
+  --focus-color: var(--color-recovered);
+  --focus-shadow: rgba(137, 229, 154, 0.25);
+}
+
+#startDate.metric-deaths:focus, #endDate.metric-deaths:focus {
+  --focus-color: var(--color-deaths);
+  --focus-shadow: rgba(255, 187, 187, 0.25);
 }
 
 /* Custom select dropdown arrow */
@@ -477,22 +493,25 @@ button.primary:hover:not(:disabled) {
   margin: var(--space-md) 0;
 }
 
-/* Slider color classes - change track, selection, and handles */
-#rangeSlider.metric-cases .range-slider-track {
-  stroke: var(--color-cases);
-}
-
+/* Slider color classes - change selection and handles to match metric */
 #rangeSlider.metric-cases .range-slider-selection {
   fill: var(--color-cases);
 }
 
 #rangeSlider.metric-cases .range-slider-handle {
   fill: var(--color-cases);
-  stroke: var(--color-background);
 }
 
-#rangeSlider.metric-recovered .range-slider-track {
-  stroke: var(--color-recovered);
+#rangeSlider.metric-cases .range-slider-handle:hover {
+  fill: var(--color-info);
+}
+
+#rangeSlider.metric-cases .range-slider-range-handle {
+  fill: var(--color-cases);
+}
+
+#rangeSlider.metric-cases .range-slider-range-handle:hover {
+  fill-opacity: 0.7;
 }
 
 #rangeSlider.metric-recovered .range-slider-selection {
@@ -501,11 +520,18 @@ button.primary:hover:not(:disabled) {
 
 #rangeSlider.metric-recovered .range-slider-handle {
   fill: var(--color-recovered);
-  stroke: var(--color-background);
 }
 
-#rangeSlider.metric-deaths .range-slider-track {
-  stroke: var(--color-deaths);
+#rangeSlider.metric-recovered .range-slider-handle:hover {
+  fill: var(--color-success);
+}
+
+#rangeSlider.metric-recovered .range-slider-range-handle {
+  fill: var(--color-recovered);
+}
+
+#rangeSlider.metric-recovered .range-slider-range-handle:hover {
+  fill-opacity: 0.7;
 }
 
 #rangeSlider.metric-deaths .range-slider-selection {
@@ -514,7 +540,18 @@ button.primary:hover:not(:disabled) {
 
 #rangeSlider.metric-deaths .range-slider-handle {
   fill: var(--color-deaths);
-  stroke: var(--color-background);
+}
+
+#rangeSlider.metric-deaths .range-slider-handle:hover {
+  fill: var(--color-warning);
+}
+
+#rangeSlider.metric-deaths .range-slider-range-handle {
+  fill: var(--color-deaths);
+}
+
+#rangeSlider.metric-deaths .range-slider-range-handle:hover {
+  fill-opacity: 0.7;
 }
 
 #rangeSlider svg {
@@ -523,13 +560,8 @@ button.primary:hover:not(:disabled) {
 }
 
 .range-slider-track {
-  stroke: var(--color-border);
+  stroke: var(--color-border-light);
   stroke-width: 6px;
-  transition: stroke var(--transition-fast);
-}
-
-.range-slider-track:hover {
-  stroke: var(--color-text-secondary);
 }
 
 .range-slider-selection {
@@ -549,12 +581,8 @@ button.primary:hover:not(:disabled) {
   transition: all var(--transition-fast);
 }
 
-.range-slider-handle:hover {
-  stroke-width: 3px;
-}
-
 .range-slider-range-handle {
-  fill-opacity: 0.3;
+  fill-opacity: 0.5;
   stroke: var(--color-background);
   stroke-width: 1px;
   cursor: move;
@@ -564,13 +592,8 @@ button.primary:hover:not(:disabled) {
 }
 
 .range-slider-range-handle:hover {
-  fill-opacity: 0.5;
+  fill-opacity: 0.7;
   stroke-width: 2px;
-}
-
-.range-slider-track {
-  stroke-width: 6px;
-  transition: stroke var(--transition-fast);
 }
 
 /* ============================================
