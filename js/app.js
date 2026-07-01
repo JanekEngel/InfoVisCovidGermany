@@ -179,8 +179,12 @@ async function init() {
   
   document.getElementById('detailSelect').onchange = e => {
     currentDetailLevel = e.target.value;
+    currentCountyId = 'GERMANY';
+    currentPopulation = 83000000;
+    document.getElementById('selectedCounty').innerHTML = 'Deutschland <span id="population" style="margin-left: 20px; font-size: 12px; color: #404e5c;">Einwohner: 83.000.000</span>';
     loadGeoJSON();
     updateMapColors();
+    if (currentCountyId) updateChart();
   };
   
   document.getElementById('countTypeSelect').onchange = e => {
