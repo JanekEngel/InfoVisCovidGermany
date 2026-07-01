@@ -483,6 +483,27 @@ button.primary:hover:not(:disabled) {
   border-color: var(--color-deaths);
 }
 
+/* Toggle groups */
+#chartControls {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.toggle-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.toggle-group-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-right: var(--space-sm);
+}
+
 /* ============================================
    CHART CONTAINER
    ============================================ */

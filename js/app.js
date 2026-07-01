@@ -204,6 +204,15 @@ async function init() {
     // Clear existing toggles
     chartControls.innerHTML = '';
     
+    // Create filter group (left)
+    const filterGroup = document.createElement('div');
+    filterGroup.className = 'toggle-group';
+    
+    const filterLabel = document.createElement('span');
+    filterLabel.className = 'toggle-group-label';
+    filterLabel.textContent = 'Filtern:';
+    filterGroup.appendChild(filterLabel);
+    
     const toggles = [
       { id: 'toggleCases', label: 'Fälle', metric: 'cases', ref: () => showCases },
       { id: 'toggleRecoveries', label: 'Genesene', metric: 'recovered', ref: () => showRecoveries },
@@ -238,9 +247,19 @@ async function init() {
         console.log('Current county:', currentCountyId);
         if (currentCountyId) updateChart();
       };
-      chartControls.appendChild(btn);
+      filterGroup.appendChild(btn);
     });
+    chartControls.appendChild(filterGroup);
     
+    // Create grouping group (right)
+    const groupGroup = document.createElement('div');
+    groupGroup.className = 'toggle-group';
+    
+    const groupLabel = document.createElement('span');
+    groupLabel.className = 'toggle-group-label';
+    groupLabel.textContent = 'Gruppieren:';
+    groupGroup.appendChild(groupLabel);
+
     // Add gender toggle
     const genderBtn = document.createElement('button');
     genderBtn.id = 'toggleGender';
@@ -251,7 +270,7 @@ async function init() {
       genderBtn.classList.toggle('active');
       if (currentCountyId) updateChart();
     };
-    chartControls.appendChild(genderBtn);
+    groupGroup.appendChild(genderBtn);
 
     // Add age groups toggle
     const ageGroupsBtn = document.createElement('button');
@@ -263,7 +282,8 @@ async function init() {
       ageGroupsBtn.classList.toggle('active');
       if (currentCountyId) updateChart();
     };
-    chartControls.appendChild(ageGroupsBtn);
+    groupGroup.appendChild(ageGroupsBtn);
+    chartControls.appendChild(groupGroup);
   }
   
   // Initialize toggles
