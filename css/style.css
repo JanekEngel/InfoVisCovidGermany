@@ -289,6 +289,22 @@ select:hover, input:hover {
   --focus-shadow: rgba(255, 187, 187, 0.25);
 }
 
+/* Map controls select dropdown shadow colors */
+#mapControls.metric-cases select:focus {
+  --focus-color: var(--color-cases);
+  --focus-shadow: rgba(163, 219, 243, 0.25);
+}
+
+#mapControls.metric-recovered select:focus {
+  --focus-color: var(--color-recovered);
+  --focus-shadow: rgba(137, 229, 154, 0.25);
+}
+
+#mapControls.metric-deaths select:focus {
+  --focus-color: var(--color-deaths);
+  --focus-shadow: rgba(255, 187, 187, 0.25);
+}
+
 /* Custom select dropdown arrow */
 select {
   appearance: none;

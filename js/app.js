@@ -161,6 +161,7 @@ async function init() {
     
     header.className = metricClass;
     rangeSlider.className = metricClass;
+    document.getElementById('mapControls').className = metricClass;
     
     // Update date input focus colors based on metric
     document.getElementById('startDate').className = metricClass;
