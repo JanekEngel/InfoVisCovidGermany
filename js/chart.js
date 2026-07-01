@@ -21,14 +21,15 @@ function updateChart() {
     // Skip rows with null, undefined, empty age groups, or the string "null"
     if (!r.Altersgruppe || r.Altersgruppe === 'null') return;
     
+    const gender = !r.Geschlecht || r.Geschlecht === 'null' ? 'unbekannt' : r.Geschlecht;
     const key = showAgeGroups 
-      ? (showGender ? r.Altersgruppe + '_' + r.Geschlecht : r.Altersgruppe)
-      : (showGender ? r.Geschlecht : 'alle');
+      ? (showGender ? r.Altersgruppe + '_' + gender : r.Altersgruppe)
+      : (showGender ? gender : 'alle');
     
     if (!agg[key]) {
       agg[key] = { 
         Altersgruppe: showAgeGroups ? r.Altersgruppe : (showGender ? 'Alle Altersgruppen' : 'Gesamt'),
-        Geschlecht: showAgeGroups ? (showGender ? r.Geschlecht : null) : (showGender ? r.Geschlecht : null),
+        Geschlecht: showAgeGroups ? (showGender ? gender : null) : (showGender ? gender : null),
         Fall: 0, 
         Genesen: 0, 
         Tod: 0 
@@ -53,7 +54,7 @@ function updateChart() {
     if (showGender) {
       // Original behavior: x0 for age groups, x1 for genders
       const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a));
-      const genders = [...new Set(data.map(d => d.Geschlecht).filter(g => g !== null))];
+      const genders = [...new Set(data.map(d => !d.Geschlecht || d.Geschlecht === 'null' ? 'unbekannt' : d.Geschlecht))];
       x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2);
       x1 = d3.scaleBand().domain(genders).range([0, x0.bandwidth()]);
     } else {
@@ -66,7 +67,7 @@ function updateChart() {
     // Age groups are aggregated
     if (showGender) {
       // x0 for genders only
-      const genders = [...new Set(data.map(d => d.Geschlecht).filter(g => g !== null))];
+      const genders = [...new Set(data.map(d => !d.Geschlecht || d.Geschlecht === 'null' ? 'unbekannt' : d.Geschlecht))];
       x0 = d3.scaleBand().domain(genders).range([0, w - 80]).padding(.2);
       x1 = null;
     } else {
@@ -108,12 +109,13 @@ function updateChart() {
   
   const bars = g.selectAll('g').data(data).enter().append('g')
     .attr('transform', d => {
+      const displayGender = !d.Geschlecht || d.Geschlecht === 'null' ? 'unbekannt' : d.Geschlecht;
       if (showAgeGroups && showGender) {
-        return `translate(${x0(d.Altersgruppe) + x1(d.Geschlecht)},0)`;
+        return `translate(${x0(d.Altersgruppe) + x1(displayGender)},0)`;
       } else if (showAgeGroups) {
         return `translate(${x0(d.Altersgruppe)},0)`;
       } else if (showGender) {
-        return `translate(${x0(d.Geschlecht)},0)`;
+        return `translate(${x0(displayGender)},0)`;
       } else {
         return `translate(${x0('Gesamt')},0)`;
       }
@@ -127,7 +129,8 @@ function updateChart() {
         return val.toLocaleString();
       };
       
-      let html = `<strong>${d.Altersgruppe}${showGender && d.Geschlecht ? ' (' + d.Geschlecht + ')' : ''}</strong>`;
+      const displayGender = !d.Geschlecht || d.Geschlecht === 'null' ? 'unbekannt' : d.Geschlecht;
+      let html = `<strong>${d.Altersgruppe}${showGender && displayGender ? ' (' + displayGender + ')' : ''}</strong>`;
       
       if (showDeaths) {
         html += `<div class="data-row"><span class="data-label">Todesfälle:</span><span class="data-value">${formatValue(d.Tod * factor, useRelativeCount)}</span></div>`;
