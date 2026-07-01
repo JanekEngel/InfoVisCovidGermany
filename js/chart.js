@@ -105,7 +105,9 @@ function updateChart() {
   // If only positive values, start y at 0
   if (yMin >= 0) yMin = 0;
   
-  const y = d3.scaleLinear().domain([yMin, yMax]).nice().range([h - 80, 0])
+  // Use same bottom margin as x-axis to ensure y-axis reaches bottom edge
+  const chartBottom = showGender && showAgeGroups ? h - 105 : h - 80;
+  const y = d3.scaleLinear().domain([yMin, yMax]).nice().range([chartBottom, 0])
   
   const bars = g.selectAll('g').data(data).enter().append('g')
     .attr('transform', d => {
@@ -195,9 +197,28 @@ function updateChart() {
       .attr('stroke', '#fff')
       .attr('stroke-width', '1px');
   }
+
+  // Add gender labels below x-axis
+  if (showGender && showAgeGroups) {
+    // Position labels 34px below the x-axis (40px - 6px)
+    const labelY = chartBottom + 34;
+    bars.append('text')
+      .attr('class', 'gender-label')
+      .attr('x', barWidth() / 2)
+      .attr('y', labelY)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '12px')
+      .attr('fill', '#404e5c')
+      .text(d => {
+        if (!d.Geschlecht || d.Geschlecht === 'null' || d.Geschlecht === 'unbekannt') return '?';
+        return d.Geschlecht;
+      });
+  }
   
+  // Shift x-axis down when both gender and age groups are shown to make room for gender icons
+  const xAxisY = showGender && showAgeGroups ? h - 105 : h - 80;
   const xAxis = g.append('g')
-    .attr('transform', `translate(0,${h - 80})`)
+    .attr('transform', `translate(0,${xAxisY})`)
     .call(d3.axisBottom(x0))
     .selectAll('text')
       .style('font-size', '12px')
