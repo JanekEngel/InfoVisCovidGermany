@@ -439,6 +439,17 @@ button.primary:hover:not(:disabled) {
   border-color: var(--color-text-secondary);
 }
 
+.chart-toggle:not(.cases):not(.recovered):not(.deaths) {
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.chart-toggle:not(.cases):not(.recovered):not(.deaths).active {
+  background: var(--color-panel-medium);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
 .chart-toggle.cases {
   color: var(--color-cases);
   border-color: var(--color-cases);

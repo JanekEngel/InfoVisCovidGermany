@@ -240,6 +240,18 @@ async function init() {
       };
       chartControls.appendChild(btn);
     });
+    
+    // Add gender toggle
+    const genderBtn = document.createElement('button');
+    genderBtn.id = 'toggleGender';
+    genderBtn.className = 'chart-toggle active';
+    genderBtn.textContent = 'Nach Geschlecht';
+    genderBtn.onclick = () => {
+      showGender = !showGender;
+      genderBtn.classList.toggle('active');
+      if (currentCountyId) updateChart();
+    };
+    chartControls.appendChild(genderBtn);
   }
   
   // Initialize toggles

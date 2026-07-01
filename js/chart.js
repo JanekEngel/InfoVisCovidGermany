@@ -1,7 +1,6 @@
 const ageOrder = ['00-04', '05-14', '15-34', '35-59', '60-79', '80+']
 
 function updateChart() { 
-  console.log('updateChart called, county:', currentCountyId, 'Show:', {showCases, showRecoveries, showDeaths});
   if (!currentCountyId) return;
   
   let rows = [];
@@ -16,24 +15,48 @@ function updateChart() {
   }
   const factor = useRelativeCount ? 100000 / currentPopulation : 1
   
-  const agg = {}
+  // Aggregate data based on gender toggle
+  const agg = {};
   rows.forEach(r => { 
-    const k = r.Altersgruppe + '_' + r.Geschlecht
-    agg[k] ??= { Altersgruppe: r.Altersgruppe, Geschlecht: r.Geschlecht, Fall: 0, Genesen: 0, Tod: 0 }
-    agg[k].Fall += +r.AnzahlFall || 0
-    agg[k].Genesen += +r.AnzahlGenesen || 0
-    agg[k].Tod += +r.AnzahlTodesfall || 0 
-  })
-  const data = Object.values(agg)
+    const key = showGender 
+      ? r.Altersgruppe + '_' + r.Geschlecht 
+      : r.Altersgruppe;
+    
+    if (!agg[key]) {
+      agg[key] = { 
+        Altersgruppe: r.Altersgruppe,
+        Geschlecht: showGender ? r.Geschlecht : null,
+        Fall: 0, 
+        Genesen: 0, 
+        Tod: 0 
+      };
+    }
+    agg[key].Fall += +r.AnzahlFall || 0;
+    agg[key].Genesen += +r.AnzahlGenesen || 0;
+    agg[key].Tod += +r.AnzahlTodesfall || 0;
+  });
+  
+  const data = Object.values(agg);
   const svg = d3.select('#barChart')
   svg.selectAll('*').remove()
   const w = 700, h = 500, m = { top: 20, left: 60, right: 20, bottom: 60 }
   svg.attr('viewBox', `0 0 ${w} ${h}`)
   const g = svg.append('g').attr('transform', `translate(${m.left},${m.top})`)
-  const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a))
-  const genders = [...new Set(data.map(d => d.Geschlecht))]
-  const x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2)
-  const x1 = d3.scaleBand().domain(genders).range([0, x0.bandwidth()])
+  
+  // Calculate x scales based on gender toggle
+  let x0, x1;
+  if (showGender) {
+    // Original behavior: x0 for age groups, x1 for genders
+    const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a));
+    const genders = [...new Set(data.map(d => d.Geschlecht))];
+    x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2);
+    x1 = d3.scaleBand().domain(genders).range([0, x0.bandwidth()]);
+  } else {
+    // Aggregated by age only
+    const ages = ageOrder.filter(a => data.some(d => d.Altersgruppe === a));
+    x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2);
+    x1 = null;
+  }
   
   // Calculate y domain based on visible dimensions
   let yMin = 0;
@@ -66,7 +89,13 @@ function updateChart() {
   const y = d3.scaleLinear().domain([yMin, yMax]).nice().range([h - 80, 0])
   
   const bars = g.selectAll('g').data(data).enter().append('g')
-    .attr('transform', d => `translate(${x0(d.Altersgruppe) + x1(d.Geschlecht)},0)`)
+    .attr('transform', d => {
+      if (showGender) {
+        return `translate(${x0(d.Altersgruppe) + x1(d.Geschlecht)},0)`;
+      } else {
+        return `translate(${x0(d.Altersgruppe)},0)`;
+      }
+    })
     .on('mouseover', function(event, d) {
       const tooltip = document.getElementById('tooltip');
       const formatValue = (val, useRelative) => {
@@ -76,7 +105,7 @@ function updateChart() {
         return val.toLocaleString();
       };
       
-      let html = `<strong>${d.Altersgruppe} (${d.Geschlecht})</strong>`;
+      let html = `<strong>${d.Altersgruppe}${showGender && d.Geschlecht ? ' (' + d.Geschlecht + ')' : ''}</strong>`;
       
       if (showDeaths) {
         html += `<div class="data-row"><span class="data-label">Todesfälle:</span><span class="data-value">${formatValue(d.Tod * factor, useRelativeCount)}</span></div>`;
@@ -106,7 +135,7 @@ function updateChart() {
   // Deaths bar
   if (showDeaths) {
     bars.append('rect')
-      .attr('width', x1.bandwidth())
+      .attr('width', showGender ? x1.bandwidth() : x0.bandwidth())
       .attr('y', d => y(0))
       .attr('height', d => y(-d.Tod * factor) - y(0))
       .attr('fill', '#ffbbbb')
@@ -117,7 +146,7 @@ function updateChart() {
   // Cases bar
   if (showCases) {
     bars.append('rect')
-      .attr('width', x1.bandwidth())
+      .attr('width', showGender ? x1.bandwidth() : x0.bandwidth())
       .attr('y', d => y(d.Fall * factor))
       .attr('height', d => y(0) - y(d.Fall * factor))
       .attr('fill', '#a3dbf3')
@@ -128,7 +157,7 @@ function updateChart() {
   // Recoveries bar
   if (showRecoveries) {
     bars.append('rect')
-      .attr('width', x1.bandwidth())
+      .attr('width', showGender ? x1.bandwidth() : x0.bandwidth())
       .attr('y', d => y((d.Fall + d.Genesen) * factor))
       .attr('height', d => y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor))
       .attr('fill', '#89e59a')
