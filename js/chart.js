@@ -1,6 +1,9 @@
 const ageOrder = ['00-04', '05-14', '15-34', '35-59', '60-79', '80+']
+
 function updateChart() { 
+  console.log('updateChart called, county:', currentCountyId, 'Show:', {showCases, showRecoveries, showDeaths});
   if (!currentCountyId) return;
+  
   let rows = [];
   
   if (currentCountyId === 'GERMANY') {
@@ -31,25 +34,41 @@ function updateChart() {
   const genders = [...new Set(data.map(d => d.Geschlecht))]
   const x0 = d3.scaleBand().domain(ages).range([0, w - 80]).padding(.2)
   const x1 = d3.scaleBand().domain(genders).range([0, x0.bandwidth()])
-  const y = d3.scaleLinear().domain([-d3.max(data, d => d.Tod * factor) || 1, d3.max(data, d => (d.Fall + d.Genesen) * factor) || 1]).nice().range([h - 80, 0])
+  
+  // Calculate y domain based on visible dimensions
+  let yMin = 0;
+  let yMax = 0;
+  
+  // Deaths are negative (below 0)
+  if (showDeaths) {
+    const maxDeaths = d3.max(data, d => d.Tod * factor) || 0;
+    yMin = Math.min(yMin, -maxDeaths);
+  }
+  
+  // Cases and recoveries are positive (above 0)
+  if (showCases) {
+    const maxCases = d3.max(data, d => d.Fall * factor) || 0;
+    yMax = Math.max(yMax, maxCases);
+  }
+  
+  if (showRecoveries) {
+    const maxRecoveries = d3.max(data, d => (d.Fall + d.Genesen) * factor) || 0;
+    yMax = Math.max(yMax, maxRecoveries);
+  }
+  
+  // Add buffer
+  yMin = yMin * 1.05;
+  yMax = yMax * 1.05;
+  
+  // If only positive values, start y at 0
+  if (yMin >= 0) yMin = 0;
+  
+  const y = d3.scaleLinear().domain([yMin, yMax]).nice().range([h - 80, 0])
   
   const bars = g.selectAll('g').data(data).enter().append('g')
     .attr('transform', d => `translate(${x0(d.Altersgruppe) + x1(d.Geschlecht)},0)`)
     .on('mouseover', function(event, d) {
       const tooltip = document.getElementById('tooltip');
-      const total = d.Fall + d.Genesen + d.Tod;
-      const displayTotal = total * factor;
-      const displayFall = d.Fall * factor;
-      const displayGenesen = d.Genesen * factor;
-      const displayTod = d.Tod * factor;
-      
-      const totalAbs = d.Fall + d.Genesen + d.Tod;
-      const totalPer100k = totalAbs * (100000 / currentPopulation);
-      
-      const fallPer100k = d.Fall * (100000 / currentPopulation);
-      const genPer100k = d.Genesen * (100000 / currentPopulation);
-      const todPer100k = d.Tod * (100000 / currentPopulation);
-      
       const formatValue = (val, useRelative) => {
         if (useRelative) {
           return val.toFixed(2);
@@ -57,13 +76,22 @@ function updateChart() {
         return val.toLocaleString();
       };
       
-      tooltip.innerHTML = `
-        <strong>${d.Altersgruppe} (${d.Geschlecht})</strong>
-        <div class="data-row"><span class="data-label">Fälle:</span><span class="data-value">${formatValue(useRelativeCount ? fallPer100k : d.Fall, useRelativeCount)}${useRelativeCount ? '' : ''}</span></div>
-        <div class="data-row"><span class="data-label">Genesene:</span><span class="data-value">${formatValue(useRelativeCount ? genPer100k : d.Genesen, useRelativeCount)}${useRelativeCount ? '' : ''}</span></div>
-        <div class="data-row"><span class="data-label">Todesfälle:</span><span class="data-value">${formatValue(useRelativeCount ? todPer100k : d.Tod, useRelativeCount)}${useRelativeCount ? '' : ''}</span></div>
-        <div class="data-row"><span class="data-label">Gesamt:</span><span class="data-value">${formatValue(useRelativeCount ? totalPer100k : totalAbs, useRelativeCount)}${useRelativeCount ? ' pro 100.000' : ''}</span></div>
-      `;
+      let html = `<strong>${d.Altersgruppe} (${d.Geschlecht})</strong>`;
+      
+      if (showDeaths) {
+        html += `<div class="data-row"><span class="data-label">Todesfälle:</span><span class="data-value">${formatValue(d.Tod * factor, useRelativeCount)}</span></div>`;
+      }
+      if (showCases) {
+        html += `<div class="data-row"><span class="data-label">Fälle:</span><span class="data-value">${formatValue(d.Fall * factor, useRelativeCount)}</span></div>`;
+      }
+      if (showRecoveries) {
+        html += `<div class="data-row"><span class="data-label">Genesene:</span><span class="data-value">${formatValue(d.Genesen * factor, useRelativeCount)}</span></div>`;
+      }
+      
+      const total = (showCases ? d.Fall : 0) + (showRecoveries ? d.Genesen : 0) + (showDeaths ? d.Tod : 0);
+      html += `<div class="data-row"><span class="data-label">Gesamt:</span><span class="data-value">${formatValue(total * factor, useRelativeCount)}${useRelativeCount ? ' pro 100.000' : ''}</span></div>`;
+      
+      tooltip.innerHTML = html;
       tooltip.style.display = 'block';
       tooltip.style.left = (event.pageX + 10) + 'px';
       tooltip.style.top = (event.pageY + 10) + 'px';
@@ -72,29 +100,41 @@ function updateChart() {
       document.getElementById('tooltip').style.display = 'none';
     });
   
-  bars.append('rect')
-    .attr('width', x1.bandwidth())
-    .attr('y', d => y(0))
-    .attr('height', d => y(-d.Tod * factor) - y(0))
-    .attr('fill', '#ffbbbb')
-    .attr('stroke', '#fff')
-    .attr('stroke-width', '1px');
+  // Render bars in correct stacking order
+  // Deaths at bottom (negative values), then cases, then recoveries at top
   
-  bars.append('rect')
-    .attr('width', x1.bandwidth())
-    .attr('y', d => y(d.Fall * factor))
-    .attr('height', d => y(0) - y(d.Fall * factor))
-    .attr('fill', '#a3dbf3')
-    .attr('stroke', '#fff')
-    .attr('stroke-width', '1px');
-    
-  bars.append('rect')
-    .attr('width', x1.bandwidth())
-    .attr('y', d => y((d.Fall + d.Genesen) * factor))
-    .attr('height', d => y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor))
-    .attr('fill', '#89e59a')
-    .attr('stroke', '#fff')
-    .attr('stroke-width', '1px');
+  // Deaths bar
+  if (showDeaths) {
+    bars.append('rect')
+      .attr('width', x1.bandwidth())
+      .attr('y', d => y(0))
+      .attr('height', d => y(-d.Tod * factor) - y(0))
+      .attr('fill', '#ffbbbb')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', '1px');
+  }
+  
+  // Cases bar
+  if (showCases) {
+    bars.append('rect')
+      .attr('width', x1.bandwidth())
+      .attr('y', d => y(d.Fall * factor))
+      .attr('height', d => y(0) - y(d.Fall * factor))
+      .attr('fill', '#a3dbf3')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', '1px');
+  }
+  
+  // Recoveries bar
+  if (showRecoveries) {
+    bars.append('rect')
+      .attr('width', x1.bandwidth())
+      .attr('y', d => y((d.Fall + d.Genesen) * factor))
+      .attr('height', d => y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor))
+      .attr('fill', '#89e59a')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', '1px');
+  }
   
   const xAxis = g.append('g')
     .attr('transform', `translate(0,${h - 80})`)

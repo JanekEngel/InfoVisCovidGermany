@@ -7,6 +7,9 @@ let stateDateAggregates = {};  // Pre-aggregated: {stateId: [{dateIndex, cases, 
 let currentDetailLevel = 'counties';
 let useRelativeCount = false;
 let currentPopulation = 1;
+let showCases = true;
+let showRecoveries = true;
+let showDeaths = true;
 const today = new Date();
 
 function normalizeId(id) {

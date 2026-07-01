@@ -197,6 +197,54 @@ async function init() {
                                            currentMetric === 'AnzahlGenesen' ? 'recovered' : 'deaths');
   endDateInput.className = startDateInput.className;
 
+  // Create chart toggle buttons
+  const chartControls = document.getElementById('chartControls');
+  
+  function createChartToggles() {
+    // Clear existing toggles
+    chartControls.innerHTML = '';
+    
+    const toggles = [
+      { id: 'toggleCases', label: 'Fälle', metric: 'cases', ref: () => showCases },
+      { id: 'toggleRecoveries', label: 'Genesene', metric: 'recovered', ref: () => showRecoveries },
+      { id: 'toggleDeaths', label: 'Todesfälle', metric: 'deaths', ref: () => showDeaths }
+    ];
+    
+    // Helper to check if at least one is shown
+    const anyShown = () => showCases || showRecoveries || showDeaths;
+    
+    toggles.forEach((toggle, i) => {
+      const btn = document.createElement('button');
+      btn.id = toggle.id;
+      btn.className = `chart-toggle ${toggle.metric} active`;
+      btn.textContent = toggle.label;
+      btn.onclick = () => {
+        // Toggle the state
+        if (i === 0) showCases = !showCases;
+        else if (i === 1) showRecoveries = !showRecoveries;
+        else if (i === 2) showDeaths = !showDeaths;
+        
+        btn.classList.toggle('active');
+        
+        // Ensure at least one dimension is shown
+        if (!anyShown()) {
+          // If all are hidden, re-enable the one that was just clicked
+          if (i === 0) showCases = true;
+          else if (i === 1) showRecoveries = true;
+          else if (i === 2) showDeaths = true;
+          btn.classList.add('active');
+        }
+        console.log('Toggling chart dimension. States:', {showCases, showRecoveries, showDeaths});
+        console.log('Current county:', currentCountyId);
+        if (currentCountyId) updateChart();
+      };
+      chartControls.appendChild(btn);
+    });
+  }
+  
+  // Initialize toggles
+  createChartToggles();
+
   function syncDatePicker(dateInput, isStart) {
     const selectedDate = dateInput.value;
     let newIndex = dateValues.indexOf(selectedDate);

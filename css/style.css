@@ -413,6 +413,66 @@ button.primary:hover:not(:disabled) {
 }
 
 /* ============================================
+   CHART CONTROLS
+   ============================================ */
+
+#chartControls {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.chart-toggle {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-none);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.chart-toggle.active {
+  background: var(--color-panel-light);
+  border-color: var(--color-text-secondary);
+}
+
+.chart-toggle.cases {
+  color: var(--color-cases);
+  border-color: var(--color-cases);
+}
+
+.chart-toggle.cases.active {
+  background: var(--color-cases);
+  color: var(--color-deep);
+  border-color: var(--color-cases);
+}
+
+.chart-toggle.recovered {
+  color: var(--color-recovered);
+  border-color: var(--color-recovered);
+}
+
+.chart-toggle.recovered.active {
+  background: var(--color-recovered);
+  color: var(--color-deep);
+  border-color: var(--color-recovered);
+}
+
+.chart-toggle.deaths {
+  color: var(--color-deaths);
+  border-color: var(--color-deaths);
+}
+
+.chart-toggle.deaths.active {
+  background: var(--color-deaths);
+  color: var(--color-deep);
+  border-color: var(--color-deaths);
+}
+
+/* ============================================
    CHART CONTAINER
    ============================================ */
 
