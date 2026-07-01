@@ -28,8 +28,8 @@
   
   /* Background colors */
   --color-background: #ffffff;
-  --color-panel-light: #f8f9fa;
-  --color-panel-medium: #f1f3f4;
+  --color-panel-light: #f1f3f4;
+  --color-panel-medium: #e9ecef;
   --color-panel-dark: #e9ecef;
   
   /* Text colors */
@@ -39,9 +39,9 @@
   --color-text-inverse: #ffffff;
   
   /* Border colors */
-  --color-border: #dee2e6;
+  --color-border: #adadad;
   --color-border-strong: #404e5c;
-  --color-border-light: #e9ecef;
+  --color-border-light: #c0c0c0;
   
   /* Status colors */
   --color-success: #89e59a;
@@ -164,7 +164,20 @@ small {
   display: flex;
   gap: var(--space-lg);
   padding: var(--space-lg);
-  background: var(--color-background);
+  background: #ebf7fc;
+  transition: background var(--transition-normal);
+}
+
+#dashboard.metric-cases {
+  background: #ebf7fc;
+}
+
+#dashboard.metric-recovered {
+  background: #e7f9ea;
+}
+
+#dashboard.metric-deaths {
+  background: #fff1f1;
 }
 
 #leftPanel {
@@ -172,7 +185,7 @@ small {
   min-width: 500px;
   display: flex;
   flex-direction: column;
-  background: var(--color-background);
+  background: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-none);
   padding: var(--space-lg);
@@ -185,6 +198,7 @@ small {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-none);
   overflow: hidden;
@@ -371,10 +385,16 @@ button.primary:hover:not(:disabled) {
 #mapControls {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-sm);
-  background: var(--color-panel-light);
-  border-bottom: 1px solid var(--color-border);
+  background: #ffffff;
   gap: var(--space-sm);
+}
+
+#mapControls::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: var(--color-border-light);
+  margin-top: var(--space-md);
 }
 
 #mapControls select {
@@ -389,7 +409,7 @@ button.primary:hover:not(:disabled) {
 
 #map {
   flex: 1;
-  background: var(--color-background);
+  background: #ffffff;
   width: 100%;
   min-height: 0;
 }
@@ -526,8 +546,7 @@ button.primary:hover:not(:disabled) {
 
 #chartContainer {
   flex: 1;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
+  background: #ffffff;
   border-radius: var(--radius-none);
   padding: var(--space-md);
   overflow: hidden;
