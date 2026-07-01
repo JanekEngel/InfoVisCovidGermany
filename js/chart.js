@@ -191,8 +191,8 @@ function updateChart() {
   if (showRecoveries) {
     bars.append('rect')
       .attr('width', barWidth())
-      .attr('y', d => y((d.Fall + d.Genesen) * factor))
-      .attr('height', d => y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor))
+      .attr('y', d => showCases ? y((d.Fall + d.Genesen) * factor) : y(d.Genesen * factor))
+      .attr('height', d => showCases ? y(d.Fall * factor) - y((d.Fall + d.Genesen) * factor) : y(0) - y(d.Genesen * factor))
       .attr('fill', '#89e59a')
       .attr('stroke', '#fff')
       .attr('stroke-width', '1px');
