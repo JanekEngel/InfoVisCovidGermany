@@ -15,9 +15,12 @@ function updateChart() {
   }
   const factor = useRelativeCount ? 100000 / currentPopulation : 1
   
-  // Aggregate data based on gender toggle
+  // Aggregate data based on gender toggle, excluding null/empty age groups
   const agg = {};
   rows.forEach(r => { 
+    // Skip rows with null, undefined, empty age groups, or the string "null"
+    if (!r.Altersgruppe || r.Altersgruppe === 'null') return;
+    
     const key = showGender 
       ? r.Altersgruppe + '_' + r.Geschlecht 
       : r.Altersgruppe;
