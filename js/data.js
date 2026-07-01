@@ -29,7 +29,7 @@ function aggregateToGermany() {
   return germanyData;
 }
 
-async function loadCSV(path=`../Bereinigte_Daten_${today.getFullYear()}_${String(today.getMonth()+1).padStart(2,'0')}_01.csv`) { 
+async function loadCSV(path=`../Bereinigte_Daten_${today.getFullYear()}_${String(today.getMonth()+1).padStart(2,'0')}_${String(today.getDate()).padStart(2,'0')}.csv`) { 
   return new Promise(r => Papa.parse(path, { 
     download: true, 
     header: true, 
