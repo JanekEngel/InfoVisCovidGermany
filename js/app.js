@@ -16,7 +16,6 @@ async function init() {
 
   // Define updateHandles here so it's accessible to syncDatePicker
   function updateHandles() {
-    console.log('updateHandles called, startIndex:', startIndex, 'endIndex:', endIndex);
     handle1.attr('cx', xScale(startIndex));
     handle2.attr('cx', xScale(endIndex));
     selection.attr('x', xScale(startIndex))
@@ -29,7 +28,6 @@ async function init() {
     document.getElementById('endDate').value = dateValues[endIndex];
     updatingFromSlider = false;
     
-    console.log('Calling updateMapColors and updateChart from updateHandles');
     updateMapColors();
     if (currentCountyId) updateChart();
   }
@@ -193,26 +191,23 @@ async function init() {
 
   function syncDatePicker(dateInput, isStart) {
     const selectedDate = dateInput.value;
-    console.log('syncDatePicker called for', isStart ? 'START' : 'END', 'date:', selectedDate);
     let newIndex = dateValues.indexOf(selectedDate);
-    console.log('Found index:', newIndex, 'in dateValues (length:', dateValues.length + ')');
     
     // If exact date not found, find the closest date that exists in data
     if (newIndex === -1) {
-      console.log('Date not found, searching for closest...');
       newIndex = dateValues.findIndex(d => d >= selectedDate);
       if (newIndex === -1) {
         newIndex = dateValues.length - 1;
       } else if (newIndex > 0 && dateValues[newIndex] > selectedDate) {
         // Choose the closest: newIndex or newIndex-1
-        const prevDate = new Date(dateValues[newIndex - 1]);
-        const nextDate = new Date(dateValues[newIndex]);
-        const selected = new Date(selectedDate);
-        if (Math.abs(selected - prevDate) < Math.abs(nextDate - selected)) {
+        // Use numeric comparison by converting to timestamps
+        const prevTs = new Date(dateValues[newIndex - 1]).getTime();
+        const nextTs = new Date(dateValues[newIndex]).getTime();
+        const selectedTs = new Date(selectedDate).getTime();
+        if (Math.abs(selectedTs - prevTs) < Math.abs(nextTs - selectedTs)) {
           newIndex = newIndex - 1;
         }
       }
-      console.log('Closest date index:', newIndex, 'date:', dateValues[newIndex]);
       // Update the date picker to the closest valid date
       dateInput.value = dateValues[newIndex];
     }
@@ -238,30 +233,22 @@ async function init() {
   }
   
   startDateInput.addEventListener('change', () => {
-    console.log('Start date CHANGE fired:', startDateInput.value);
     if (updatingFromSlider) return;
-    console.log('Calling syncDatePicker for start');
     syncDatePicker(startDateInput, true);
   });
   
   startDateInput.addEventListener('blur', () => {
-    console.log('Start date BLUR fired:', startDateInput.value);
     if (updatingFromSlider) return;
-    console.log('Calling syncDatePicker for start');
     syncDatePicker(startDateInput, true);
   });
   
   endDateInput.addEventListener('change', () => {
-    console.log('End date CHANGE fired:', endDateInput.value);
     if (updatingFromSlider) return;
-    console.log('Calling syncDatePicker for end');
     syncDatePicker(endDateInput, false);
   });
   
   endDateInput.addEventListener('blur', () => {
-    console.log('End date BLUR fired:', endDateInput.value);
     if (updatingFromSlider) return;
-    console.log('Calling syncDatePicker for end');
     syncDatePicker(endDateInput, false);
   });
   

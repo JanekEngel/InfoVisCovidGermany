@@ -38,19 +38,10 @@ function metricColor(t) {
 }
 
 function updateMapColors(){
- console.log('updateMapColors called, dates:', document.getElementById('startDate').value, '-', document.getElementById('endDate').value);
- if(!geoLayer) {
-   console.log('geoLayer not ready, returning early');
-   return;
-}
+ if(!geoLayer) return;
 
- const startDateEl = document.getElementById('startDate');
- const endDateEl = document.getElementById('endDate');
- const startDate = new Date(startDateEl.value);
- const endDate = new Date(endDateEl.value);
- console.log('Date range for filtering:', startDate, 'to', endDate);
  let max=1;
- const dataIndex = currentDetailLevel === 'counties' ? countyIndex : stateIndex;
+ const aggIndex = currentDetailLevel === 'counties' ? countyDateAggregates : stateDateAggregates;
 
  geoLayer.eachLayer(layer=>{
    const rawAgs = layer.feature.properties.AGS;
@@ -59,15 +50,19 @@ function updateMapColors(){
    let cases = 0, recovered = 0, deaths = 0;
    let metricValue = 0;
 
-   (dataIndex[ags]||[]).forEach(r=>{
-      const rowDate = new Date(r.Refdatum);
-      if(rowDate >= startDate && rowDate <= endDate){
-         cases += Number(r.AnzahlFall) || 0;
-         recovered += Number(r.AnzahlGenesen) || 0;
-         deaths += Number(r.AnzahlTodesfall) || 0;
-         metricValue += Number(r[currentMetric]) || 0;
-      }
-   });
+   const regionAgg = aggIndex[ags];
+   if (regionAgg) {
+     // Sum values from startIndex to endIndex using pre-aggregated data
+     for (let i = startIndex; i <= endIndex; i++) {
+       if (regionAgg[i]) {
+         cases += regionAgg[i].cases;
+         recovered += regionAgg[i].recoveries;
+         deaths += regionAgg[i].deaths;
+         metricValue += regionAgg[i][currentMetric === 'AnzahlFall' ? 'cases' : 
+                                    currentMetric === 'AnzahlGenesen' ? 'recoveries' : 'deaths'];
+       }
+     }
+   }
 
    let value;
    
