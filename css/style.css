@@ -385,22 +385,19 @@ button.primary:hover:not(:disabled) {
 #mapControls {
   display: flex;
   justify-content: space-between;
+  padding: var(--space-sm);
   background: #ffffff;
   gap: var(--space-sm);
-}
-
-#mapControls::after {
-  content: '';
-  display: block;
-  height: 1px;
-  background: var(--color-border-light);
-  margin-top: var(--space-md);
 }
 
 #mapControls select {
   flex: 1;
   margin: 0;
   min-width: 0;
+}
+
+#mapControls select {
+  margin: 0;
 }
 
 /* ============================================
