@@ -338,24 +338,19 @@ async function init() {
     if (currentCountyId) updateChart();
   }
   
-  startDateInput.addEventListener('change', () => {
+  const handleDateInput = (input, isStart) => {
     if (updatingFromSlider) return;
-    syncDatePicker(startDateInput, true);
+    syncDatePicker(input, isStart);
+  };
+  
+  startDateInput.addEventListener('blur', () => handleDateInput(startDateInput, true));
+  startDateInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleDateInput(startDateInput, true);
   });
   
-  startDateInput.addEventListener('blur', () => {
-    if (updatingFromSlider) return;
-    syncDatePicker(startDateInput, true);
-  });
-  
-  endDateInput.addEventListener('change', () => {
-    if (updatingFromSlider) return;
-    syncDatePicker(endDateInput, false);
-  });
-  
-  endDateInput.addEventListener('blur', () => {
-    if (updatingFromSlider) return;
-    syncDatePicker(endDateInput, false);
+  endDateInput.addEventListener('blur', () => handleDateInput(endDateInput, false));
+  endDateInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleDateInput(endDateInput, false);
   });
   
   document.getElementById('loading').style.display = 'none';
